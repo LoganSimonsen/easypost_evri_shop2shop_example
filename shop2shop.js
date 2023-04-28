@@ -18,25 +18,27 @@ var requestOptions = {
   redirect: "follow",
 };
 
-let postCode = "W8 6PT"; // the post code where you want to pick up your parcel
-let shopId = "";
-//fetch a valid parcel shop id from the Evri parcelShop API.
-fetch(
-  `https://api.hermesworld.co.uk/enterprise-parcelshop-api/v1/parcelshop?postcode=${postCode}&distance=20&count=10`,
-  requestOptions
-)
-  .then((response) => response.text())
-  .then((result) => {
-    result = JSON.parse(result);
-    for (i = 0; i < result.length; i++) {
-      if (result[i].locationType === "ParcelShop") {
-        shopId = result[i].parcelShopId;
-      }
-    }
-  })
-  .catch((error) => console.log("error", error));
+let postCode = "CR2 6HR"; // the post code where you want to pick up your parcel
 
-(async () => {
+async function getParcelShopId() {
+  //fetch a valid parcel shop id from the Evri parcelShop API.
+  const response = await fetch(
+    `https://api.hermesworld.co.uk/enterprise-parcelshop-api/v1/parcelshop?postcode=${postCode}&distance=20&count=10`,
+    requestOptions
+  );
+
+  const result = await response.json();
+  console.log(result);
+  for (i = 0; i < result.length; i++) {
+    if (result[i].locationType === "ParcelShop") {
+      shopId = result[i].parcelShopId;
+      createEasyPostShipment(shopId);
+    }
+  }
+}
+
+async function createEasyPostShipment(shopId) {
+  console.log(shopId);
   let shipment = await api.Shipment.create({
     parcel: {
       length: 5, //inches
@@ -55,17 +57,17 @@ fetch(
       company: "test company",
     },
     to_address: {
-      street1: "19 Scarsdale Villas",
+      street1: "27 Newark Rd",
       street2: "",
-      city: "London",
+      city: "South Croydon",
       state: "",
-      zip: "W8 6PT",
+      zip: "CR2 6HR",
       country: "GB",
       name: "test name",
-      company: "test company",
+      company: "test company", // 27 Newark Rd, South Croydon CR2 6HR, UK
       carrier_facility: shopId, // Evri parcelShopId goes here
     },
-    reference: "my-shipment-reference",
+    reference: "myshipmentreference",
     carrier_accounts: [process.env.EASYPOST_EVRI_CARRIER_ACCOUNT_ID], // your EasyPost Evri Carrier Account ID goes here
     options: {
       label_format: "PNG",
@@ -77,8 +79,11 @@ fetch(
   console.log(shipment);
   //buy shipment by lowest rate where `carrier` is Evri and `service` is Shop2Shop.
   const boughtShipment = await api.Shipment.buy(
-    shipment.lowestRate("Evri", "Shop2Shop")
+    shipment.id,
+    shipment.lowestRate(["Evri"], ["Shop2Shop"])
   );
 
   console.log(boughtShipment);
-})();
+}
+
+getParcelShopId();
