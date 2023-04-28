@@ -33,12 +33,13 @@ async function getParcelShopId() {
     if (result[i].locationType === "ParcelShop") {
       shopId = result[i].parcelShopId;
       createEasyPostShipment(shopId);
+      return;
     }
   }
 }
 
 async function createEasyPostShipment(shopId) {
-  console.log(shopId);
+  //   console.log(shopId);
   let shipment = await api.Shipment.create({
     parcel: {
       length: 5, //inches
@@ -64,7 +65,7 @@ async function createEasyPostShipment(shopId) {
       zip: "CR2 6HR",
       country: "GB",
       name: "test name",
-      company: "test company", // 27 Newark Rd, South Croydon CR2 6HR, UK
+      company: "test company",
       carrier_facility: shopId, // Evri parcelShopId goes here
     },
     reference: "myshipmentreference",
@@ -76,7 +77,7 @@ async function createEasyPostShipment(shopId) {
     },
   });
 
-  console.log(shipment);
+  //   console.log(shipment);
   //buy shipment by lowest rate where `carrier` is Evri and `service` is Shop2Shop.
   const boughtShipment = await api.Shipment.buy(
     shipment.id,
