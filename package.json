@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@easypost/api": "^6.3.0",
+    "dotenv": "^16.0.3",
+    "node-fetch": "^2.6.9"
+  }
+}
