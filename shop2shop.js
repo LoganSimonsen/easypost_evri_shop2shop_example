@@ -66,7 +66,7 @@ fetch(
       carrier_facility: shopId, // Evri parcelShopId goes here
     },
     reference: "my-shipment-reference",
-    carrier_accounts: ["ca_bc2deec805b34c87bbb7c45e57b411e9"], // your EasyPost Evri Carrier Account ID goes here
+    carrier_accounts: [process.env.EASYPOST_EVRI_CARRIER_ACCOUNT_ID], // your EasyPost Evri Carrier Account ID goes here
     options: {
       label_format: "PNG",
       label_size: "4x6",
