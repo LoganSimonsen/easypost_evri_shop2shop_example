@@ -28,7 +28,6 @@ async function getParcelShopId() {
   );
 
   const result = await response.json();
-  console.log(result);
   for (i = 0; i < result.length; i++) {
     if (result[i].locationType === "ParcelShop") {
       shopId = result[i].parcelShopId;
